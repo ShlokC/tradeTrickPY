@@ -3,8 +3,11 @@ import pypyodbc
 import os
 import numpy as np
 import io
+import base64
 from pandas import datetime
 import pandas as pd
+from sklearn import linear_model
+from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.cross_validation import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score
@@ -27,6 +30,7 @@ def hello_world():
   #return 'Hello, World!'
 @app.route('/linearRegression')
 def linearRegression():
+  try:
     THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
     filename_path = os.path.join(THIS_FOLDER, 'timedata.csv')
     balance_data = pd.read_csv(filename_path, sep= ',',header= 0)
@@ -66,6 +70,7 @@ def linearRegression():
     plot_url = base64.b64encode(img.getvalue()).decode()
     img_tag ='<img src="data:image/png;base64,{}">'.format(plot_url)
     return render_template('output.html',Coefficients=regr.coef_, mse=mse, vscr=vScr, result=data.decode('utf8'))
-
+  except OSError as err:
+    return jsonify(err)
 if __name__ == '__main__':
   app.run()
